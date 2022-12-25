@@ -44,7 +44,9 @@ for (const r of rightHand) {
 console.log(rightHand);
 
 function server() {
-    wss = new WebSocket("ws://localhost:3000");
+    wss = new WebSocket("wss://localhost:3000", {
+        rejectUnauthorized: false
+    });
     wss.onopen = (event) => {
         console.log('connection ok');
     };
@@ -55,7 +57,7 @@ function server() {
 
 function join() {
 
-    const input = prompt("Please enter your name:", "ws://localhost:3000");
+    const input = prompt("Please enter your name:", "wss://localhost:3000");
 
     ws = new WebSocket(input);
     ws.onopen = (event) => {
