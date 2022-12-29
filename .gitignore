@@ -1,1 +1,21 @@
-node_modules
+node_modules/
+.expo/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# macOS
+.DS_Store
+
+# electron
+electron/*
+!electron/main.js
+!electron/package.json
+!electron/yarn.lock
+!electron/icon512.png
