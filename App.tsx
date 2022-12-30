@@ -1,12 +1,12 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
 const KEY_DOWN = 144;
 const KEY_UP = 128;
 const blackKeys = [1, 3, 6, 8, 10];
 const PEDAL = 177;
-// let wss;
+let wss: WebSocket;
 
 interface Keys {
   whiteKeys: { [position: number]: string }
@@ -26,33 +26,6 @@ interface Event {
   data: number[]
 }
 
-
-// function server() {
-//   wss = new WebSocket("wss://localhost:3000", {
-//     rejectUnauthorized: false
-//   });
-//   wss.onopen = (event) => {
-//     console.log('connection ok');
-//   };
-//   wss.onmessage = (message) => {
-//     console.log('chegou', message.data);
-//   };
-// }
-
-// function join() {
-
-//   const input = prompt("Please enter your name:", "wss://localhost:3000");
-
-//   ws = new WebSocket(input);
-//   ws.onopen = (event) => {
-//     console.log('connection ok');
-//   };
-//   ws.onmessage = (message) => {
-//     console.log('join chegou', message);
-//     parseInformation(JSON.parse(message.data));
-//     draw(keys);
-//   };
-// }
 
 export default function App() {
 
@@ -100,8 +73,38 @@ export default function App() {
   console.log(rightHand);
 
 
+  function server() {
+    wss = new WebSocket("ws://localhost:3000");
+    wss.onopen = (event) => {
+      console.log('connection ok');
+    };
+    wss.onmessage = (message) => {
+      console.log('chegou', message.data);
+    };
+  }
+
+  function join() {
+
+    const input = prompt("Please enter your name:", "wss://localhost:3000");
+
+    if (!input) {
+      return;
+    }
+
+    const ws = new WebSocket(input);
+    ws.onopen = (event) => {
+      console.log('connection ok');
+    };
+    ws.onmessage = (message) => {
+      console.log('join chegou', message);
+      parseInformation(JSON.parse(message.data));
+      draw();
+    };
+  }
+
+
   let midi = null;  // global MIDIAccess object
-  function onMIDISuccess(midiAccess) {
+  function onMIDISuccess(midiAccess: WebMidi.MIDIAccess) {
     console.log("MIDI ready!");
     midi = midiAccess;  // store in the global (in real usage, would probably keep in an object instance)
     console.log(midi);
@@ -114,7 +117,7 @@ export default function App() {
 
   let position = 0;
 
-  function parseInformation(sheets: HTMLCanvasElement, eventData: number[]) {
+  function parseInformation(eventData: number[]) {
     const [keyEvent, key, strength] = eventData;
 
     const marginKeys = key - 21;
@@ -178,17 +181,17 @@ export default function App() {
 
   }
 
-  function onMIDIMessage(sheets: HTMLCanvasElement, event: Event) {
-    parseInformation(sheets, event.data);
+  function onMIDIMessage(event: WebMidi.MIDIMessageEvent) {
+    parseInformation([event.data[0], event.data[1], event.data[2]]);
 
-    // if (wss) {
-    //   wss.send(JSON.stringify(event.data));
-    // }
+    if (wss) {
+      wss.send(JSON.stringify([event.data[0], event.data[1], event.data[2]]));
+    }
 
     draw();
   }
 
-  function startLoggingMIDIInput(midiAccess, indexOfPort) {
+  function startLoggingMIDIInput(midiAccess: WebMidi.MIDIAccess) {
     midiAccess.inputs.forEach((entry) => { entry.onmidimessage = onMIDIMessage; });
   }
 
@@ -364,10 +367,15 @@ export default function App() {
       return;
     }
 
-    navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+    try {
+      navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+    } catch (err) {
+
+    }
 
     draw();
     drawSheets();
+    server();
 
   }, []);
 
@@ -377,6 +385,7 @@ export default function App() {
       <StatusBar style="auto" /> */}
       <canvas id="piano" width="1125" height="165" ref={pianoRef}></canvas>
       <canvas id="sheets" width="1125" height="600" ref={sheetsRef}></canvas>
+      <Button title='Join' onPress={join}></Button>
     </View>
   );
 }
