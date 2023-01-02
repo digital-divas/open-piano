@@ -16,6 +16,16 @@ const wss = new WebSocket.Server({
     port: 3000
 });
 
+// for (let i = 3000; i < 3100; i++) {
+//     try {
+//         const wss = new WebSocket.Server({
+//             port: 3000
+//         });
+//     } catch (err) {
+
+//     }
+// }
+
 function onError(ws, err) {
     console.error(`onError: ${err.message}`);
 }
