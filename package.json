@@ -1,31 +1,5 @@
 {
-  "name": "open-piano",
-  "version": "1.0.0",
-  "main": "node_modules/expo/AppEntry.js",
-  "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "build-web": "expo export:web",
-    "copy-to-electron": "cp -r web-build/* electron"
-  },
   "dependencies": {
-    "@expo/webpack-config": "^0.17.2",
-    "@shopify/react-native-skia": "0.1.157",
-    "@types/webmidi": "^2.0.6",
-    "expo": "~47.0.9",
-    "expo-status-bar": "~1.4.2",
-    "react": "18.1.0",
-    "react-dom": "18.1.0",
-    "react-native": "0.70.5",
-    "react-native-web": "~0.18.9"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.12.9",
-    "@types/react": "~18.0.14",
-    "@types/react-native": "~0.70.6",
-    "typescript": "^4.6.3"
-  },
-  "private": true
+    "simple-peer": "^9.11.1"
+  }
 }
