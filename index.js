@@ -2,7 +2,10 @@ const KEY_DOWN = 144;
 const KEY_UP = 128;
 const blackKeys = [1, 3, 6, 8, 10];
 const PEDAL = 177;
-let wss;
+/**
+ * @type {null | import('./node_modules/simple-peer/index')}
+ */
+let ps;
 const keys = { whiteKeys: {}, blackKeys: {}, pedal: 0 };
 
 const rightHand = [{
@@ -44,33 +47,56 @@ for (const r of rightHand) {
 console.log(rightHand);
 
 function server() {
-    wss = new WebSocket("wss://localhost:3000", {
-        rejectUnauthorized: false
+    ps = new SimplePeer({
+        initiator: true,
+        trickle: false
     });
-    wss.onopen = (event) => {
-        console.log('connection ok');
-    };
-    wss.onmessage = (message) => {
-        console.log('chegou', message.data);
-    };
+    ps.on('error', err => console.log('error', err));
+
+    ps.on('signal', data => {
+        console.log('SIGNAL', JSON.stringify(data));
+
+        const input = prompt("digite o answer:");
+        ps.signal(JSON.parse(input));
+    });
+
+    ps.on('connect', () => {
+        console.log('CONNECT');
+        ps.send('whatever' + Math.random());
+    });
+
+    ps.on('data', data => {
+        console.log('data: ' + data);
+    });
+
 }
 
 function join() {
+    const p = new SimplePeer({
+        initiator: false,
+        trickle: false
+    });
+    p.on('error', err => console.log('error', err));
 
-    const input = prompt("Please enter your name:", "wss://localhost:3000");
+    p.on('connect', () => {
+        console.log('CONNECT');
+        p.send('whatever' + Math.random());
+    });
 
-    ws = new WebSocket(input);
-    ws.onopen = (event) => {
-        console.log('connection ok');
-    };
-    ws.onmessage = (message) => {
-        console.log('join chegou', message);
-        parseInformation(JSON.parse(message.data));
-        draw(keys);
-    };
+    p.on('data', data => {
+        console.log('data: ' + data);
+    });
+
+    const input = prompt("digite o signal:");
+    p.signal(JSON.parse(input));
 }
 
 let midi = null;  // global MIDIAccess object
+
+/**
+ * 
+ * @param {WebMidi.MIDIAccess} midiAccess 
+ */
 function onMIDISuccess(midiAccess) {
     console.log("MIDI ready!");
     midi = midiAccess;  // store in the global (in real usage, would probably keep in an object instance)
@@ -78,6 +104,10 @@ function onMIDISuccess(midiAccess) {
     startLoggingMIDIInput(midi);
 }
 
+/**
+ * 
+ * @param {Error} msg 
+ */
 function onMIDIFailure(msg) {
     console.error(`Failed to get MIDI access - ${msg}`);
 }
@@ -86,6 +116,10 @@ navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
 
 let position = 0;
 
+/**
+ * 
+ * @param {Uint8Array} eventData 
+ */
 function parseInformation(eventData) {
     const [keyEvent, key, strength] = eventData;
 
@@ -150,23 +184,38 @@ function parseInformation(eventData) {
 
 }
 
+/**
+ * 
+ * @param {WebMidi.MIDIMessageEvent} event 
+ */
 function onMIDIMessage(event) {
     parseInformation(event.data);
 
-    if (wss) {
-        wss.send(JSON.stringify(event.data));
+    if (ps) {
+        ps.send(JSON.stringify(event.data));
     }
 
     draw(keys);
 }
 
+/**
+ * 
+ * @param {WebMidi.MIDIAccess} midiAccess 
+ * @param {*} indexOfPort 
+ */
 function startLoggingMIDIInput(midiAccess, indexOfPort) {
-    midiAccess.inputs.forEach((entry) => { entry.onmidimessage = onMIDIMessage; });
+    for (const entry of midiAccess.inputs) {
+        entry.onmidimessage = onMIDIMessage;
+    }
 }
 
 const keyLength = 20;
 const pianoLength = 52;
 
+/**
+ * 
+ * @param {{ whiteKeys: {}, blackKeys: {}, pedal: number }} pressedKeys 
+ */
 function draw(pressedKeys) {
 
     /**
@@ -237,6 +286,13 @@ function draw(pressedKeys) {
     context.fillText("Ped.", (keyLength * 53) + 6, keyLength * 4);
 }
 
+/**
+ * 
+ * @param {CanvasRenderingContext2D} context 
+ * @param {number} position 
+ * @param {number} note 
+ * @param {boolean} pressed 
+ */
 function drawSemiColumn(context, position, note, pressed) {
     context.beginPath();
     context.fillStyle = "#000";
@@ -253,6 +309,11 @@ function drawSemiColumn(context, position, note, pressed) {
     context.stroke();
 }
 
+/**
+ * 
+ * @param {string} note 
+ * @returns 
+ */
 function noteToSpace(note) {
     switch (note) {
         case "C":
@@ -272,6 +333,11 @@ function noteToSpace(note) {
     }
 }
 
+/**
+ * 
+ * @param {string} note 
+ * @returns 
+ */
 function charNoteToNumber(note) {
     switch (note) {
         case "C":
