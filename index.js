@@ -78,6 +78,10 @@ function join() {
     });
     p.on('error', err => console.log('error', err));
 
+    p.on('signal', data => {
+        console.log('SIGNAL', JSON.stringify(data));
+    });
+
     p.on('connect', () => {
         console.log('CONNECT');
         p.send('whatever' + Math.random());
@@ -87,7 +91,7 @@ function join() {
         console.log('data: ' + data);
     });
 
-    const input = prompt("digite o signal:");
+    const input = prompt("digite o offer:");
     p.signal(JSON.parse(input));
 }
 
