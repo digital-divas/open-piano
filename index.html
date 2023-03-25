@@ -1,4 +1,9 @@
 <link rel="manifest" href="manifest.json" />
+<script>
+    if (typeof navigator.serviceWorker !== 'undefined') {
+        navigator.serviceWorker.register('sw.js');
+    }
+</script>
 <script src="node_modules/simple-peer/simplepeer.min.js"></script>
 <script src="index.js" type="application/javascript"></script>
 
