@@ -55,6 +55,7 @@ function server() {
 
     ps.on('signal', data => {
         console.log('SIGNAL', JSON.stringify(data));
+        document.getElementById('sdp-info').value = JSON.stringify(data);
 
         const input = prompt("digite o answer:");
         ps.signal(JSON.parse(input));
@@ -80,6 +81,7 @@ function join() {
 
     p.on('signal', data => {
         console.log('SIGNAL', JSON.stringify(data));
+        document.getElementById('sdp-info').value = JSON.stringify(data);
     });
 
     p.on('connect', () => {
