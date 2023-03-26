@@ -3,8 +3,9 @@
     "display": "standalone",
     "lang": "en",
     "name": "Open Piano",
-    "short_name": "Open Piano",
-    "start_url": "/open-piano?utm_source=web_app_manifest",
+    "short_name": "OpenPiano",
+    "start_url": "/open-piano/",
+    "scope": "/open-piano/",
     "orientation": "landscape",
     "icons": [
         {

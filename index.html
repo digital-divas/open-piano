@@ -1,50 +1,57 @@
-<link rel="manifest" href="manifest.json" />
-<script>
-    if ("serviceWorker" in navigator) {
-        window.addEventListener("load", async () => {
-            try {
-                const registration = await navigator.serviceWorker.register('https://digital-divas.github.io/open-piano/sw.js');
+<!DOCTYPE html>
+<html lang="en">
 
-                registration.onupdatefound = () => {
-                    const installingWorker = registration.installing;
-                    if (installingWorker == null) {
-                        return;
-                    }
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === "installed") {
-                            if (navigator.serviceWorker.controller) {
-                                // At this point, the updated precached content has been fetched,
-                                // but the previous service worker will still serve the older
-                                // content until all client tabs are closed.
-                                console.log(
-                                    "New content is available and will be used when all " +
-                                    "tabs for this page are closed. See https://cra.link/PWA."
-                                );
-                            } else {
-                                console.log("Content is cached for offline use.");
-                            }
+<head>
+    <link rel="manifest" href="manifest.json" />
+</head>
+
+<body>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/open-piano/sw.js', { scope: '/open-piano/' });
+
+                    registration.onupdatefound = () => {
+                        const installingWorker = registration.installing;
+                        if (installingWorker == null) {
+                            return;
                         }
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === "installed") {
+                                if (navigator.serviceWorker.controller) {
+                                    // At this point, the updated precached content has been fetched,
+                                    // but the previous service worker will still serve the older
+                                    // content until all client tabs are closed.
+                                    console.log(
+                                        "New content is available and will be used when all " +
+                                        "tabs for this page are closed. See https://cra.link/PWA."
+                                    );
+                                } else {
+                                    console.log("Content is cached for offline use.");
+                                }
+                            }
+                        };
                     };
-                };
-            } catch (err) {
-                console.log(err);
-            }
-        });
-    } else {
-        console.error("Your browser doesn't support service-worker.");
-    }
-</script>
-<script src="node_modules/simple-peer/simplepeer.min.js"></script>
-<script src="index.js" type="application/javascript"></script>
+                } catch (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+            console.error("Your browser doesn't support service-worker.");
+        }
+    </script>
+    <script src="node_modules/simple-peer/simplepeer.min.js"></script>
+    <script src="index.js" type="application/javascript"></script>
 
-<canvas id="piano" width="1125" height="165"></canvas>
+    <canvas id="piano" width="1125" height="165"></canvas>
 
-<canvas id="sheets" width="1125" height="600"></canvas>
+    <canvas id="sheets" width="1125" height="600"></canvas>
 
-<button onclick="server()">Server</button>
-<button onclick="join()">Join</button>
-<textarea id="sdp-info" disabled></textarea>
-
+    <button onclick="server()">Server</button>
+    <button onclick="join()">Join</button>
+    <textarea id="sdp-info" disabled></textarea>
+</body>
 <!-- 
 <html>
 
