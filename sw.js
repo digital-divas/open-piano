@@ -1,10 +1,12 @@
-const CACHE_NAME = 'whatever-cache';
+const CACHE_NAME = 'open-piano';
 
 // Add whichever assets you want to precache here:
-const PRECACHE_ASSETS = [
-    '/assets/',
-    '/src/'
-];
+// const PRECACHE_ASSETS = [
+//     '/assets/',
+//     '/src/'
+// ];
+
+const PRECACHE_ASSETS = [];
 
 // Listener for the install event - precaches our assets list on service worker install.
 self.addEventListener('install', event => {
