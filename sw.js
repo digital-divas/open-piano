@@ -1,18 +1,20 @@
+const GHPATH = '/open-piano';
+
+const URLS = [
+    `${GHPATH}/`,
+    `${GHPATH}/index.html`,
+    `${GHPATH}/index.js`
+];
+
 const CACHE_NAME = 'open-piano';
-
-// Add whichever assets you want to precache here:
-// const PRECACHE_ASSETS = [
-//     '/assets/',
-//     '/src/'
-// ];
-
-const PRECACHE_ASSETS = [];
 
 // Listener for the install event - precaches our assets list on service worker install.
 self.addEventListener('install', event => {
     event.waitUntil((async () => {
         const cache = await caches.open(CACHE_NAME);
-        cache.addAll(PRECACHE_ASSETS);
+        console.log('Installing cache : ' + CACHE_NAME);
+        await cache.addAll(URLS);
+        console.log('Installed cache.');
     })());
 });
 
@@ -30,9 +32,11 @@ self.addEventListener('fetch', event => {
         // check if we got a valid response
         if (cachedResponse !== undefined) {
             // Cache hit, return the resource
+            console.log('Responding with cache : ' + e.request.url);
             return cachedResponse;
         } else {
             // Otherwise, go to the network
+            console.log('File is not cached, fetching : ' + e.request.url);
             return fetch(event.request);
         };
     });
