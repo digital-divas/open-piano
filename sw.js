@@ -22,22 +22,31 @@ self.addEventListener('activate', event => {
     event.waitUntil(clients.claim());
 });
 
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', e => {
+    /**
+     * @type {FetchEvent} 
+     */
+    const event = e;
+
     event.respondWith(async () => {
-        const cache = await caches.open(CACHE_NAME);
+        try {
+            const cache = await caches.open(CACHE_NAME);
 
-        // match the request to our cache
-        const cachedResponse = await cache.match(event.request);
+            // match the request to our cache
+            const cachedResponse = await cache.match(event.request);
 
-        // check if we got a valid response
-        if (cachedResponse !== undefined) {
-            // Cache hit, return the resource
-            console.log('Responding with cache : ' + e.request.url);
-            return cachedResponse;
-        } else {
-            // Otherwise, go to the network
-            console.log('File is not cached, fetching : ' + e.request.url);
-            return fetch(event.request);
-        };
+            // check if we got a valid response
+            if (cachedResponse !== undefined) {
+                // Cache hit, return the resource
+                console.log('Responding with cache : ' + event.request.url);
+                return cachedResponse;
+            } else {
+                // Otherwise, go to the network
+                console.log('File is not cached, fetching : ' + event.request.url);
+                return fetch(event.request);
+            };
+        } catch (err) {
+            console.error('Error on fetch', err);
+        }
     });
 });
