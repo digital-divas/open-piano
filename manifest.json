@@ -1,11 +1,13 @@
 {
-    "background_color": "#ffffff",
-    "display": "standalone",
-    "lang": "en",
     "name": "Open Piano",
     "short_name": "OpenPiano",
-    "start_url": "/open-piano/",
+    "description": "Open Piano",
     "scope": "/open-piano/",
+    "start_url": "/open-piano/",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "display": "standalone",
+    "lang": "en",
     "orientation": "landscape",
     "icons": [
         {
