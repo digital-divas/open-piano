@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -51,51 +51,48 @@
     <button onclick="server()">Server</button>
     <button onclick="join()">Join</button>
     <textarea id="sdp-info" disabled></textarea>
-</body>
-<!-- 
-<html>
+</body> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub page as PWA template</title>
+    <link rel="canonical" href="https://digital-divas.github.io/open-piano/" />
+    <link rel="manifest" href="/open-piano/manifest.json" />
+    <link rel="stylesheet" href="css/styles.css">
+</head>
 
 <body>
-    <style>
-        #outgoing {
-            width: 600px;
-            word-wrap: break-word;
-            white-space: normal;
-        }
-    </style>
-    <form>
-        <textarea id="incoming"></textarea>
-        <button type="submit">submit</button>
-    </form>
-    <pre id="outgoing"></pre>
-    <script src="node_modules/simple-peer/simplepeer.min.js"></script>
+
+    <h1>GitHub page as PWA template</h1>
+    <p>
+        This is a PWA template for GitHub pages.
+        Make sure to check the README at
+        <a href="https://github.com/digital-divas/open-piano/">https://github.com/digital-divas/open-piano/</a> and
+        to change the necessary settings to your needs.
+    </p>
+
     <script>
-        const p = new SimplePeer({
-            initiator: location.hash === '#1',
-            trickle: false
-        });
-
-        p.on('error', err => console.log('error', err));
-
-        p.on('signal', data => {
-            console.log('SIGNAL', JSON.stringify(data));
-            document.querySelector('#outgoing').textContent = JSON.stringify(data);
-        });
-
-        document.querySelector('form').addEventListener('submit', ev => {
-            ev.preventDefault();
-            p.signal(JSON.parse(document.querySelector('#incoming').value));
-        });
-
-        p.on('connect', () => {
-            console.log('CONNECT');
-            p.send('whatever' + Math.random());
-        });
-
-        p.on('data', data => {
-            console.log('data: ' + data);
-        })
+        if (navigator.serviceWorker) {
+            navigator.serviceWorker.register(
+                '/open-piano/sw.js',
+                { scope: '/open-piano/' }
+            );
+        }
     </script>
+
+    <script src="node_modules/simple-peer/simplepeer.min.js"></script>
+    <script src="index.js" type="application/javascript"></script>
+    <canvas id="piano" width="1125" height="165"></canvas>
+
+    <canvas id="sheets" width="1125" height="600"></canvas>
+    <button onclick="server()">Server</button>
+    <button onclick="join()">Join</button>
+    <textarea id="sdp-info" disabled></textarea>
 </body>
 
-</html> -->
+</html>
